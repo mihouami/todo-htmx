@@ -1,0 +1,12 @@
+01 - START
+    python -m venv venv
+    source venv/scripts/activate
+    pip install django
+    django-admin startproject project
+    cd project
+    django-admin startapp users
+add .gitignore
+
+    
+
+    

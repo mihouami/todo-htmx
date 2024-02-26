@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django-related
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+/media
+/static
+
+# Ignore the virtual environment directory
+venv/
+
+# Ignore the pipenv virtual environment directory
+.pipenv/
+
+# Ignore environment variables file
+.env
+
+# Ignore IDE or editor-specific files
+.vscode/
+.idea/
+
+# Ignore local settings file
+local_settings.py
+
+# Ignore session, cache, and temporary files
+*.bak
+*.swp
+*.swo
+*.DS_Store
+*.bak
