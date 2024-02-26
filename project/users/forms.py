@@ -3,10 +3,15 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 class UserForm(UserCreationForm):
-    country = forms.ModelChoiceField(queryset=Country.objects.all())  # Provide queryset for country
+    country = forms.ModelChoiceField(queryset=Country.objects.order_by('name'))  # Provide queryset for country
     cars = forms.ModelMultipleChoiceField(queryset=Car.objects.all())  # Provide queryset for cars
     email = forms.EmailField()
 
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'cars', 'country')
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()  
+    password = forms.CharField(widget=forms.PasswordInput)  
