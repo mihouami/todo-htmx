@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserForm, LoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import User
 
 
 #from django.contrib.auth import get_user_model
@@ -35,11 +34,13 @@ def login_user(request):
                 if user is not None:
                     login(request, user)
                     messages.success(request, 'You have been logged in')
-                    return redirect('login')
+                    return redirect('home')
         context = {'form':form}
         return render(request, 'login.html', context)
     else:
         return redirect('register')
+
+  
     
 def logout_user(request):
     logout(request)

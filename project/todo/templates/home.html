@@ -1,0 +1,89 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} {% block content %}
+<div class="container w-75">
+  <br />
+  <h1>Todo's list</h1>
+  <br />
+  <form method="post">
+    {% csrf_token %}<!---->
+    {% if not form.instance.id %}<!---->
+    {{ form|crispy }}
+    <button name="add" type="submit" class="btn btn-success">Submit</button>
+    {% endif %}
+    <br /><br />
+    <table class="table table-striped table-hover table-bordered">
+      <thead>
+        <tr class="text-center">
+          <th scope="col">Description</th>
+          <th scope="col">Added</th>
+          <th scope="col">Last update</th>
+          <th scope="col">Completed</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        {% for todo in todos %}<!---->
+        {% if form.instance.id == todo.id %}<!---->
+        <tr>
+          <td>{{ form.description|as_crispy_field }}</td>
+          <td>{{ todo.added_at|timesince }}</td>
+          <td>{{ todo.updated_at|timesince }}</td>
+          <td>{{ form.is_completed|as_crispy_field }}</td>
+          <td>
+            <button
+              name="edit"
+              value="{{ todo.id }}"
+              type="submit"
+              class="btn btn-success"
+            >
+              Update
+            </button>
+          </td>
+        </tr>
+        {% else %}
+
+        <tr>
+          <td>{{ todo.description }}</td>
+          <td>{{ todo.added_at|timesince }}</td>
+          <td>{{ todo.updated_at|timesince }}</td>
+          <td>
+            {% if todo.is_completed == True %}
+            <a
+              class="btn btn-success btn-sm"
+              href="{% url 'complete' todo.id %}"
+              >{{ todo.is_completed }}</a
+            >
+            {% else %}<a
+              class="btn btn-warning btn-sm"
+              href="{% url 'complete' todo.id %}"
+              >{{ todo.is_completed }}</a
+            >{% endif %}
+          </td>
+
+          <td>
+            {% if todo.user == user %}
+            <a
+              href="{% url 'delete' todo.id %}"
+              class="btn btn-danger btn-sm my-1"
+              ><i class="bi bi-trash-fill"></i></a
+            ><button
+              formnovalidate
+              name="update"
+              value="{{ todo.id }}"
+              class="btn btn-secondary btn-sm mx-1"
+            >
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+            {% else %}
+            <a href="" class="btn btn-primary btn-sm mx-1"
+              ><i class="bi bi-binoculars-fill"></i
+            ></a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% endblock %}
