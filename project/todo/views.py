@@ -1,14 +1,21 @@
 from django.shortcuts import render, redirect
 from .models import Todo
-from .forms import TodoForm
+from .forms import TodoForm, TodoFilterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .filters import TodoFilter
+
 
 # VIEW, ADD, UPDATE
 @login_required(login_url='user/login/')
 def home(request):
+    #description = request.GET.get('todo')
+    #todos = Todo.objects.all()
+    #if description:
+    #    todos = Todo.objects.filter(description__icontains=description)
+    #form2 = TodoFilterForm() 
+    todofilter = TodoFilter(request.GET, queryset=Todo.objects.all())
     form = TodoForm(request.POST or None)
-    todos = Todo.objects.all()
     if request.method == 'POST':
         if 'add' in request.POST:
             if form.is_valid():
@@ -33,7 +40,7 @@ def home(request):
                         return redirect('home')
             else:
                 messages.warning(request, 'You are not allowed to update this todo')
-    context = {'form':form, 'todos':todos}
+    context = {'form':form, 'todos':todofilter.qs, 'form2':todofilter.form}
     return render(request, 'home.html', context)
 
 # MARK COMPLETE VIEW

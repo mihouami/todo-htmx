@@ -31,7 +31,15 @@
   </head>
   <body class="bg-dark-subtle">
     <div class="container-fluid bg-dark py-5 position-relative">
-      <div class="position-absolute end-0 mx-2">
+      <div
+        class="position-absolute top-50 start-0 mx-2 translate-middle-y"
+      ></div>
+      <a
+        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover mx-1"
+        href="{% url 'home' %}"
+        >Home</a
+      >
+      <div class="position-absolute top-50 end-0 mx-2 translate-middle-y">
         {% if not user.is_authenticated %}
         <a
           class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover mx-1"
@@ -44,6 +52,7 @@
           >Login</a
         >
         {% else %}
+
         <a
           class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover mx-1"
           href="{% url 'logout' %}"

@@ -12,3 +12,8 @@ class TodoForm(forms.ModelForm):
         super(TodoForm, self).__init__(*args, **kwargs)
         self.fields['description'].widget.attrs['placeholder'] = 'Description'
         self.fields['description'].label = ''
+        self.fields['importance'].label = ''
+
+
+class TodoFilterForm(forms.Form):
+    todo = forms.CharField()
