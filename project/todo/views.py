@@ -14,6 +14,7 @@ def home(request):
     #if description:
     #    todos = Todo.objects.filter(description__icontains=description)
     #form2 = TodoFilterForm() 
+
     todofilter = TodoFilter(request.GET, queryset=Todo.objects.all())
     form = TodoForm(request.POST or None)
     if request.method == 'POST':
@@ -35,11 +36,18 @@ def home(request):
                     if form.is_valid():
                         todo = form.save(commit=False)
                         todo.user = request.user
-                        messages.success(request, 'Todo Updated')
                         todo.save()
                         return redirect('home')
             else:
                 messages.warning(request, 'You are not allowed to update this todo')
+    elif request.method == 'GET':
+        if 'sort' in request.GET:
+            sort_value = request.GET.get('sort')
+            order = request.GET.get('order')
+            if order == 'desc':
+                todofilter = TodoFilter(request.GET, queryset=Todo.objects.order_by('-' + sort_value))
+            else:
+                todofilter = TodoFilter(request.GET, queryset=Todo.objects.order_by(sort_value))
     context = {'form':form, 'todos':todofilter.qs, 'form2':todofilter.form}
     return render(request, 'home.html', context)
 

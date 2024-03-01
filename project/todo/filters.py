@@ -7,7 +7,7 @@ class TodoFilter(django_filters.FilterSet):
     added_at = django_filters.DateRangeFilter() #this is working
     #added_at = django_filters.DateFilter(widget=forms.DateInput(attrs={'type':'date'})) #this is not working
     updated_at = django_filters.DateFromToRangeFilter() #this is working
-    user = django_filters.ModelChoiceFilter(queryset=User.objects.values('username'))
+    user = django_filters.ModelChoiceFilter(queryset=User.objects.all())
     importance = django_filters.MultipleChoiceFilter(choices=Todo.ImportanceChoices.choices, widget=forms.CheckboxSelectMultiple())
     
 

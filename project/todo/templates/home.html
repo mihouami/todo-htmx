@@ -1,111 +1,204 @@
-{% extends 'base.html' %} {% load crispy_forms_tags %} {% block content %}
+{% extends 'base.html' %}<!---->
+{% load static sorting_tags %}<!---->
+{% load crispy_forms_tags %}<!---->
+{% block content %}
 <div class="container-fluid">
   <div class="row">
-    <div class="col-8 py-3">
-      <h2>Add Todo</h2>
-      <form method="post">
-        {% csrf_token %}<!---->
-        {% if not form.instance.id %}<!---->
-        <div class="w-75">
-          {{ form|crispy }}
-          <button
-            formnovalidate
-            name="add"
-            type="submit"
-            class="btn btn-success"
-          >
-            Submit
-          </button>
+    <div class="col-lg-8 py-3">
+      <div class="row">
+        <div class="col-4 order-2 position-relative">
+          <form method="get" id="sortForm">
+            <div>
+              <h2>Sort</h2>
+              <select name="sort" class="form-select">
+                <option value="description" {% if request.GET.sort == 'description' %} selected {% endif %}>Description</option>
+                <option value="added_at" {% if request.GET.sort == 'added_at' %} selected {% endif %}>Added Date</option>
+                <option value="updated_at" {% if request.GET.sort == 'updated_at' %} selected {% endif %}>Updated Date</option>
+                <option value="importance" {% if request.GET.sort == 'importance' %} selected {% endif %}>Importance</option>
+                <option value="is_completed" {% if request.GET.sort == 'is_completed' %} selected {% endif %}>Completed</option>
+              </select>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="order"
+                  id="inlineRadio1"
+                  value="asc"
+                  {% if request.GET.order == 'asc' %} checked {% endif %}
+                  checked
+                />
+                <label class="form-check-label" for="inlineRadio1">Asc</label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="order"
+                  id="inlineRadio2"
+                  value="desc"
+                  {% if request.GET.order == 'desc' %} checked {% endif %}
+                />
+                <label class="form-check-label" for="inlineRadio2">Desc</label>
+              </div>
+              <button
+                formnovalidate
+                type="submit"
+                class="btn btn-secondary"
+                form="sortForm"
+              >
+                Sort
+              </button>
+            </div>
+          </form>
+          <a href="{% url 'home' %}" class="btn btn-dark position-absolute bottom-0 end-0 mb-3 me-3">Reset</a>
         </div>
 
-        {% endif %}
-        <br />
-        <table class="table table-striped table-hover table-bordered">
-          <thead>
-            <tr class="text-center">
-              <th scope="col">Description</th>
-              <th scope="col">Added</th>
-              <th scope="col">Last update</th>
-              <th scope="col">Importance</th>
-              <th scope="col">Completed</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="text-center">
-            {% for todo in todos %}<!---->
-            {% if form.instance.id == todo.id %}<!---->
-            <tr>
-              <td>{{ form.description|as_crispy_field }}</td>
-              <td>{{ todo.added_at|timesince }}</td>
-              <td>{{ todo.updated_at|timesince }}</td>
-              <td>{{ form.importance|as_crispy_field }}</td>
-              <td>{{ form.is_completed|as_crispy_field }}</td>
-              <td>
+        {% if form.instance.id %}<!---->
+        <div class="col-8 order-1">
+          <form method="post">
+            {% csrf_token %}<!---->
+            <h2>Add Todo</h2>
+            <div lass="w-100">
+              <fieldset disabled>
+                {{ form|crispy }}
                 <button
-                  name="edit"
-                  value="{{ todo.id }}"
-                  type="submit"
-                  class="btn btn-success"
-                >
-                  Update
-                </button>
-              </td>
-            </tr>
-            {% else %}
-
-            <tr>
-              <td>{{ todo.description }}</td>
-              <td>{{ todo.added_at|timesince }}</td>
-              <td>{{ todo.updated_at|timesince }}</td>
-
-              <td>{{ todo.get_importance_display }}</td>
-              <td>
-                {% if todo.is_completed == True %}
-                <a
-                  class="btn btn-success btn-sm"
-                  href="{% url 'complete' todo.id %}"
-                  >{{ todo.is_completed }}</a
-                >
-                {% else %}<a
-                  class="btn btn-warning btn-sm"
-                  href="{% url 'complete' todo.id %}"
-                  >{{ todo.is_completed }}</a
-                >{% endif %}
-              </td>
-
-              <td>
-                {% if todo.user == user %}
-                <a
-                  href="{% url 'delete' todo.id %}"
-                  class="btn btn-danger btn-sm my-1"
-                  ><i class="bi bi-trash-fill"></i></a
-                ><button
                   formnovalidate
-                  name="update"
-                  value="{{ todo.id }}"
-                  class="btn btn-secondary btn-sm mx-1"
+                  name="add"
+                  type="submit"
+                  class="btn btn-success mb-2"
                 >
-                  <i class="bi bi-arrow-repeat"></i>
+                  Submit
                 </button>
-                {% else %}
-                <a href="" class="btn btn-primary btn-sm mx-1"
-                  ><i class="bi bi-binoculars-fill"></i
-                ></a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endif %} {% endfor %}
-          </tbody>
-        </table>
-      </form>
+              </fieldset>
+            </div>
+          </form>
+        </div>
+        {% else %}
+        <div class="col-8 order-1">
+          <form method="post">
+            {% csrf_token %}<!---->
+            <h2>Add Todo</h2>
+            <div lass="w-100">
+              <fieldset>
+                {{ form|crispy }}
+                <button
+                  formnovalidate
+                  name="add"
+                  type="submit"
+                  class="btn btn-success mb-2"
+                >
+                  Submit
+                </button>
+              </fieldset>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      <div class="row">
+        <form method="post">
+          {% csrf_token %}<!---->
+          <div class="col">
+            {% autosort todos %}
+            <div class="table-responsive">
+              <table class="table table-striped table-hover table-bordered">
+                <thead>
+                  <tr class="text-center" style="padding: 0; margin: 0;">
+                    <th scope="col">
+                      {% anchor description "Description" %}
+                    </th>
+                    <th scope="col">{% anchor added_at "Added date" %}</th>
+                    <th scope="col">{% anchor updated_at "Updated date" %}</th>
+                    <th scope="col">{% anchor importance "Importance" %}</th>
+                    <th scope="col">{% anchor is_completed "Completed" %}</th>
+                    <th scope="col"> <a href="" style="background-color: white;
+                      color: black;
+                      padding: 10px 28px;
+                      text-align: center;
+                      text-decoration: none;
+                      display: inline-block;
+                      display: inline-block;">Actions</a></th>
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  {% for todo in todos %}<!---->
+                  {% if form.instance.id == todo.id %}<!---->
+                  {% csrf_token %}<!---->
+                  <tr>
+                    <td>{{ form.description|as_crispy_field }}</td>
+                    <td>{{ todo.added_at|timesince }}</td>
+                    <td>{{ todo.updated_at|timesince }}</td>
+                    <td>{{ form.importance|as_crispy_field }}</td>
+                    <td>{{ form.is_completed|as_crispy_field }}</td>
+                    <td>
+                      <button
+                        name="edit"
+                        value="{{ todo.id }}"
+                        type="submit"
+                        class="btn btn-success"
+                      >
+                        Update
+                      </button>
+                    </td>
+                  </tr>
+                  {% else %}
+
+                  <tr>
+                    <td>{{ todo.description }}</td>
+                    <td>{{ todo.added_at|timesince }}</td>
+                    <td>{{ todo.updated_at|timesince }}</td>
+
+                    <td>{{ todo.get_importance_display }}</td>
+                    <td>
+                      {% if todo.is_completed == True %}
+                      <a
+                        class="btn btn-success btn-sm"
+                        href="{% url 'complete' todo.id %}"
+                        >{{ todo.is_completed }}</a
+                      >
+                      {% else %}<a
+                        class="btn btn-warning btn-sm"
+                        href="{% url 'complete' todo.id %}"
+                        >{{ todo.is_completed }}</a
+                      >{% endif %}
+                    </td>
+
+                    <td>
+                      {% if todo.user == user %}
+                      <a
+                        href="{% url 'delete' todo.id %}"
+                        class="btn btn-danger btn-sm my-1"
+                        ><i class="bi bi-trash-fill"></i></a
+                      ><button
+                        formnovalidate
+                        name="update"
+                        value="{{ todo.id }}"
+                        class="btn btn-secondary btn-sm mx-1"
+                      >
+                        <i class="bi bi-arrow-repeat"></i>
+                      </button>
+                      {% else %}
+                      <a href="" class="btn btn-primary btn-sm mx-1"
+                        ><i class="bi bi-binoculars-fill"></i
+                      ></a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endif %} {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <br />
     </div>
-    <div class="col-4 border bg-white py-3">
+    <div class="col-lg-4 border bg-white py-3">
       <h2>Filter</h2>
       <form method="get">
         {{ form2|crispy}}
-
         <input type="submit" value="Submit" class="btn btn-primary" />
-        <a href="{% url 'home' %}" class="btn btn-dark">Reset</a>
       </form>
     </div>
   </div>
