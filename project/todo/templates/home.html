@@ -187,6 +187,7 @@
                   {% endif %} {% endfor %}
                 </tbody>
               </table>
+              <a href="{% url 'download' %}?{{ request.GET.urlencode }}" class="btn btn-dark">download</a>  
             </div>
           </div>
         </form>

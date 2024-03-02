@@ -1,20 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from .models import Todo
 from .forms import TodoForm, TodoFilterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .filters import TodoFilter
+import csv
 
 
 # VIEW, ADD, UPDATE
 @login_required(login_url='user/login/')
 def home(request):
-    #description = request.GET.get('todo')
-    #todos = Todo.objects.all()
-    #if description:
-    #    todos = Todo.objects.filter(description__icontains=description)
-    #form2 = TodoFilterForm() 
-
     todofilter = TodoFilter(request.GET, queryset=Todo.objects.all())
     form = TodoForm(request.POST or None)
     if request.method == 'POST':
@@ -47,9 +42,29 @@ def home(request):
             if order == 'desc':
                 todofilter = TodoFilter(request.GET, queryset=Todo.objects.order_by('-' + sort_value))
             else:
-                todofilter = TodoFilter(request.GET, queryset=Todo.objects.order_by(sort_value))
+                todofilter = TodoFilter(request.GET, queryset=Todo.objects.order_by(sort_value)) 
     context = {'form':form, 'todos':todofilter.qs, 'form2':todofilter.form}
     return render(request, 'home.html', context)
+
+# Donwload CSV file
+@login_required(login_url='user/login/')
+def download_csv(request):
+    filter = TodoFilter(request.GET, queryset=Todo.objects.all()).qs
+    # Create a CSV file in memory
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="table_data.csv"'
+    # Write table data to CSV
+    writer = csv.writer(response)
+    # Write header row
+    header_row = [field.name for field in Todo._meta.fields]  # Get field names
+    writer.writerow(header_row)
+    # Write data rows
+    for obj in filter:
+        row = [getattr(obj, field.name) for field in Todo._meta.fields]
+        writer.writerow(row)
+    
+    return response
+
 
 # MARK COMPLETE VIEW
 @login_required(login_url='user/login/')

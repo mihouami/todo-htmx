@@ -5,4 +5,5 @@ urlpatterns = [
     path('', home, name='home'),
     path('delete/<int:pk>/', delete, name='delete'),
     path('complete/<int:pk>/', complete, name='complete'),
+    path('download_csv/', download_csv, name='download'),
 ]
