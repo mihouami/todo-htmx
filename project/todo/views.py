@@ -22,8 +22,6 @@ def submit_todo(request):
 
 
 
-
-
 # VIEW, ADD, UPDATE
 @login_required(login_url='user/login/')
 def home(request):
@@ -81,7 +79,6 @@ def download_csv(request):
     for obj in filter:
         row = [getattr(obj, field.name) for field in Todo._meta.fields]
         writer.writerow(row)
-    
     return response
 
 
@@ -137,6 +134,28 @@ def delete(request, pk):
     response = HttpResponse(status=204)
     response['HX-Trigger'] = 'delete'
     return response
+
+# Update VIEW WITH HTMX
+@login_required(login_url='user/login/')
+@require_POST
+def update_one(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    form = TodoForm(instance=todo)
+    context = {'form':form,'todo':todo}
+    return render(request, 'home.html#todo-partial_update', context)
+
+# Update VIEW WITH HTMX
+@login_required(login_url='user/login/')
+@require_POST
+def update_two(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    form = TodoForm(request.POST, instance=todo)
+    if form.is_valid():
+        todo = form.save(commit=False)
+        todo.user = request.user
+        todo.save()
+    context = {'form':form,'todo':todo}
+    return render(request, 'home.html#todo-partial', context)
 
 
 

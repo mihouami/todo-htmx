@@ -129,7 +129,7 @@
                 <tbody class="text-center" id="todo-table">
                   {% for todo in todos %}<!---->
                   {% if form.instance.id == todo.id %}<!---->
-                  {% csrf_token %}<!---->
+                  {% partialdef todo-partial_update inline=True %}
                   <tr>
                     <td>{{ form.description|as_crispy_field }}</td>
                     <td>{{ todo.added_at|timesince }}</td>
@@ -138,15 +138,16 @@
                     <td>{{ form.is_completed|as_crispy_field }}</td>
                     <td>
                       <button
-                        name="edit"
-                        value="{{ todo.id }}"
-                        type="submit"
+                        hx-post="{% url 'update_two' todo.id %}"
+                        hx-target="closest tr"
+                        hx-swap='outerHTML'
                         class="btn btn-success"
                       >
                         Update
                       </button>
                     </td>
                   </tr>
+                  {% endpartialdef %}
                   {% else %}
                   {% partialdef todo-partial inline=True %}
                   <tr>
@@ -181,9 +182,10 @@
                       class="btn btn-danger btn-sm my-1"
                         ><i class="bi bi-trash-fill"></i></button
                       ><button
+                        hx-post="{% url 'update_one' todo.id %}" 
+                        hx-target="closest tr"
+                        hx-swap='outerHTML'
                         formnovalidate
-                        name="update"
-                        value="{{ todo.id }}"
                         class="btn btn-secondary btn-sm mx-1"
                       >
                         <i class="bi bi-arrow-repeat"></i>
