@@ -157,24 +157,29 @@
                     <td>{{ todo.get_importance_display }}</td>
                     <td>
                       {% if todo.is_completed == True %}
-                      <a
+                      <button
+                        hx-post="{% url 'complete' todo.id %}"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML"
                         class="btn btn-success btn-sm"
-                        href="{% url 'complete' todo.id %}"
-                        >{{ todo.is_completed }}</a
+                        >{{ todo.is_completed }}</
                       >
-                      {% else %}<a
+                      {% else %}<button
                         class="btn btn-warning btn-sm"
-                        href="{% url 'complete' todo.id %}"
-                        >{{ todo.is_completed }}</a
+                        hx-post="{% url 'complete' todo.id %}"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML"
+                        >{{ todo.is_completed }}</
                       >{% endif %}
                     </td>
 
                     <td>
                       {% if todo.user == user %}
-                      <a
-                        href="{% url 'delete' todo.id %}"
-                        class="btn btn-danger btn-sm my-1"
-                        ><i class="bi bi-trash-fill"></i></a
+                      <button
+                      hx-delete="{% url 'delete' todo.id %}"
+                      hx-on:delete="this.closest('tr').remove()"
+                      class="btn btn-danger btn-sm my-1"
+                        ><i class="bi bi-trash-fill"></i></button
                       ><button
                         formnovalidate
                         name="update"

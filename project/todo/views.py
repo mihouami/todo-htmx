@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Todo
 from .forms import TodoForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .filters import TodoFilter
 import csv
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 
 # ADD todo with HTMX
 @login_required(login_url='user/login/')
@@ -85,6 +85,7 @@ def download_csv(request):
     return response
 
 
+'''
 # MARK COMPLETE VIEW
 @login_required(login_url='user/login/')
 def complete(request, pk):
@@ -98,8 +99,23 @@ def complete(request, pk):
     else:
         messages.warning(request, 'You are not allowed to update this todo')
     return redirect('home')
+'''
+
+# MARK COMPLETE VIEW USING HTMX
+@login_required(login_url='user/login/')
+@require_POST
+def complete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    if todo.is_completed == True:
+        todo.is_completed = False
+    else:
+        todo.is_completed = True
+    todo.save()
+    context = {'todo':todo}
+    return render(request, 'home.html#todo-partial', context)
 
 
+'''
 # DELETE VIEW
 @login_required(login_url='user/login/')
 def delete(request, pk):
@@ -110,5 +126,17 @@ def delete(request, pk):
     else:
         messages.warning(request, 'You are not allowed to delete this todo')
     return redirect('home')
-        
+'''
+
+# DELETE VIEW WITH HTMX
+@login_required(login_url='user/login/')
+@require_http_methods(['DELETE'])
+def delete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    todo.delete()
+    response = HttpResponse(status=204)
+    response['HX-Trigger'] = 'delete'
+    return response
+
+
 
