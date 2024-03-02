@@ -1,6 +1,7 @@
 {% extends 'base.html' %}<!---->
 {% load static sorting_tags %}<!---->
 {% load crispy_forms_tags %}<!---->
+{% load partials %}<!---->
 {% block content %}
 <div class="container-fluid">
   <div class="row">
@@ -75,7 +76,12 @@
         </div>
         {% else %}
         <div class="col-8 order-1">
-          <form method="post">
+          <form method="post" 
+                hx-post="{% url 'submit_todo' %}" 
+                hx-target="#todo-table"
+                hx-swap='beforeend'
+                hx-on::after-request="this.reset()"
+                >
             {% csrf_token %}<!---->
             <h2>Add Todo</h2>
             <div lass="w-100">
@@ -101,7 +107,7 @@
           <div class="col">
             {% autosort todos %}
             <div class="table-responsive">
-              <table class="table table-striped table-hover table-bordered">
+              <table  class="table table-striped table-hover table-bordered">
                 <thead>
                   <tr class="text-center" style="padding: 0; margin: 0;">
                     <th scope="col">
@@ -120,7 +126,7 @@
                       display: inline-block;">Actions</a></th>
                   </tr>
                 </thead>
-                <tbody class="text-center">
+                <tbody class="text-center" id="todo-table">
                   {% for todo in todos %}<!---->
                   {% if form.instance.id == todo.id %}<!---->
                   {% csrf_token %}<!---->
@@ -142,7 +148,7 @@
                     </td>
                   </tr>
                   {% else %}
-
+                  {% partialdef todo-partial inline=True %}
                   <tr>
                     <td>{{ todo.description }}</td>
                     <td>{{ todo.added_at|timesince }}</td>
@@ -184,6 +190,7 @@
                       {% endif %}
                     </td>
                   </tr>
+                  {% endpartialdef %}
                   {% endif %} {% endfor %}
                 </tbody>
               </table>

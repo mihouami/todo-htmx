@@ -1,10 +1,27 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import Todo
-from .forms import TodoForm, TodoFilterForm
+from .forms import TodoForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .filters import TodoFilter
 import csv
+from django.views.decorators.http import require_POST
+
+# ADD todo with HTMX
+@login_required(login_url='user/login/')
+@require_POST
+def submit_todo(request):
+    form = TodoForm(request.POST)
+    if form.is_valid():
+        todo = form.save(commit=False)
+        todo.user = request.user
+        todo.save()
+        #return and HTML partial
+        context = {'todo':todo}
+        return render(request, 'home.html#todo-partial', context)
+
+
+
 
 
 # VIEW, ADD, UPDATE
@@ -13,6 +30,7 @@ def home(request):
     todofilter = TodoFilter(request.GET, queryset=Todo.objects.all())
     form = TodoForm(request.POST or None)
     if request.method == 'POST':
+        '''
         if 'add' in request.POST:
             if form.is_valid():
                 todo = form.save(commit=False)
@@ -20,7 +38,8 @@ def home(request):
                 messages.success(request, 'Todo Added')
                 todo.save()
                 return redirect('home')
-        else:
+        '''
+        if 1==1:
             pk = request.POST.get('edit') or request.POST.get('update')
             todo = Todo.objects.get(id=pk)
             if request.user == todo.user:

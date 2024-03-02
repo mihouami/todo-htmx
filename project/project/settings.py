@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_filters",
     'webstack_django_sorting',
+    "template_partials",
 ]
 
 MIDDLEWARE = [
